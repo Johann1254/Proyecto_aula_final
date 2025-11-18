@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout_u}"> <!-- nombre de tu layout -->
+
+<head>
+  <title>Dashboard - Usuario</title>
+</head>
+
+<body>
+  <div layout:fragment="content">
+
+    <!-- Encabezado -->
+    <div class="container-fluid">
+      <h1 class="h3 mb-4 text-gray-800">Bienvenido al Panel de Usuario</h1>
+      <p class="mb-4">
+        Aquí puedes gestionar tus pedidos, revisar reportes y usar herramientas del sistema.
+      </p>
+
+      <!-- Tarjetas de resumen -->
+      <div class="row">
+
+        <!-- Tarjeta Pedidos -->
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                    Pedidos Realizados
+                  </div>
+                  <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalPedidos}">0</div>
+                </div>
+                <div class="col-auto">
+                  <i class="fas fa-box fa-2x text-gray-300"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarjeta Reportes -->
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                    Reportes Generados
+                  </div>
+                  <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalReportes}">0</div>
+                </div>
+                <div class="col-auto">
+                  <i class="fas fa-chart-line fa-2x text-gray-300"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Sección inferior opcional -->
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-info">Últimos movimientos</h6>
+            </div>
+            <div class="card-body">
+              <p>Resumen de tus últimas actividades dentro del sistema.</p>
+              <p th:if="${movimientos == null}">No hay movimientos recientes.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

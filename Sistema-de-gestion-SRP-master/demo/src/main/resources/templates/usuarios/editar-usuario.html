@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Editar usuario</title>
+
+  <!-- Bootstrap y estilos -->
+  <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" />
+  <link href="/css/sb-admin-2.min.css" rel="stylesheet" />
+</head>
+
+<body>
+  <div layout:fragment="content" class="container mt-5">
+    <div class="card shadow p-4">
+      <h3 class="text-primary mb-3 text-center">
+        <i class="fas fa-user-edit"></i> Editar Usuario
+      </h3>
+
+      <!-- ✅ Alertas Bootstrap -->
+      <div id="alerta" class="alert d-none text-center" role="alert"></div>
+
+      <form id="usuarioForm" novalidate>
+        <input type="hidden" id="id" name="id" />
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="usuario" class="form-label">Nombre de usuario</label>
+            <input type="text" id="usuario" name="usuario" class="form-control" required />
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label for="correo" class="form-label">Correo electrónico</label>
+            <input type="email" id="correo" name="correo" class="form-control" required />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="contrasena" class="form-label">Contraseña</label>
+            <input type="password" id="contrasena" name="contrasena" class="form-control" />
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label for="rol" class="form-label">Rol</label>
+            <select id="rol" name="rol" class="form-select form-control" required>
+              <option value="">Seleccione un rol</option>
+              <option value="ROLE_ADMIN">Administrador</option>
+              <option value="ROLE_USER">Usuario</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-check mb-3">
+          <input class="form-check-input" type="checkbox" id="activo" name="activo" />
+          <label class="form-check-label" for="activo">Usuario activo</label>
+        </div>
+
+        <div class="d-flex justify-content-center gap-3">
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save"></i> Guardar
+          </button>
+          <a href="/usuarios" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Volver
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <div layout:fragment="scripts">
+    <script src="/vendor/jquery/jquery.min.js"></script>
+    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/editar-usuario.js"></script>
+  </div>
+</body>
+</html>

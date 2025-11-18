@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout/layout}">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Proveedores</title>
+  <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" />
+  <link href="/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet" />
+  <link href="/css/sb-admin-2.min.css" rel="stylesheet" />
+  <link href="/css/dashboard.css" rel="stylesheet" />
+  <link href="/css/alerta-eliminar-usuario.css" rel="stylesheet" />
+</head>
+
+<body id="page-top">
+
+  <div id="wrapper">
+
+    <div layout:fragment="content" class="container-fluid">
+      <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Proveedores</h1>
+        <a href="/proveedores/nuevo" class="btn btn-primary btn-sm shadow-sm">
+          <i class="fas fa-user-plus fa-sm text-white-50"></i> Nuevo Proveedor
+        </a>
+      </div>
+
+      <div id="overlay"></div>
+
+      <div id="alertaConfirmacion" class="card d-none">
+        <div class="header text-center">
+          <div class="content">
+            <span class="title fw-bold">¿Eliminar proveedor?</span>
+            <p class="message mb-2">Esta acción no se puede deshacer.</p>
+          </div>
+          <div class="actions d-flex justify-content-center gap-2 mt-3">
+            <button class="track btn btn-danger btn-sm" type="button">Sí, eliminar</button>
+            <button class="dismiss btn btn-secondary btn-sm" type="button" style="font-weight: bold;">X</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla -->
+      <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-primary">Lista de Proveedores</h6>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Teléfono</th>
+                  <th>NIT</th>
+                  <th>Dirección</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div layout:fragment="scripts">
+    <script src="/vendor/jquery/jquery.min.js"></script>
+    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    <script src="/js/sb-admin-2.min.js"></script>
+    <script src="/js/proveedores.js"></script>
+    <script src="/js/eliminar-proveedor.js"></script>
+  </div>
+</body>
+</html>
