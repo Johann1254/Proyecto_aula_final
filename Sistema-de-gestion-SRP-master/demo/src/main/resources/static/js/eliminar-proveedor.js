@@ -39,11 +39,11 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!response.ok) throw new Error("Error al eliminar");
 
       ocultarAlerta();
-      alert("✅ Proveedor eliminado correctamente");
+      alert("Proveedor eliminado correctamente");
       window.location.reload();
     } catch (error) {
       console.error("Error al eliminar proveedor:", error);
-      alert("❌ No se pudo eliminar el proveedor.");
+      alert("No se pudo eliminar el proveedor.");
     }
   });
 });

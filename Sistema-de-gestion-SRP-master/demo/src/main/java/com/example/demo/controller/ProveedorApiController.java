@@ -1,12 +1,17 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.mongo.Proveedor;
+import com.example.demo.repos.mongo.ProveedorRepository;
 import com.example.demo.service.ProveedorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -16,9 +21,23 @@ public class ProveedorApiController {
     @Autowired
     private ProveedorService proveedorService;
 
+    @Autowired
+    private ProveedorRepository proveedorRepository;
+
     @GetMapping
-    public List<Proveedor> listarProveedores() {
-        return proveedorService.listarProveedores();
+    public Map<String, Object> listarProveedores(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Proveedor> pagina = proveedorRepository.findAll(pageable);
+
+        Map<String, Object> respuesta = new HashMap<>();
+        respuesta.put("data", pagina.getContent());
+        respuesta.put("recordsTotal", pagina.getTotalElements());
+        respuesta.put("recordsFiltered", pagina.getTotalElements()); // sin filtros por ahora
+
+        return respuesta;
     }
 
     @GetMapping("/{id}")

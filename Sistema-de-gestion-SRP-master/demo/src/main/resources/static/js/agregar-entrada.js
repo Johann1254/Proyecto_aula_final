@@ -1,9 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
   const formulario = document.getElementById("formEntrada");
-  const alertaExito = document.getElementById("alertaExito");
-  const overlay = document.getElementById("overlay");
-  const btnCerrarAlerta = document.querySelector("#alertaExito .dismiss");
-  const btnAceptarAlerta = document.querySelector("#alertaExito .track");
 
   const inputNombre = document.getElementById("nombre");
   const inputInsumoId = document.getElementById("insumoIdSeleccionado");
@@ -15,9 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const insumosAgregados = [];
 
   const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
-  const csrfHeader = document.querySelector(
-    'meta[name="_csrf_header"]'
-  )?.content;
+  const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
 
   // Bloquear cantidad al inicio
   inputCantidad.disabled = true;
@@ -28,7 +22,9 @@ document.addEventListener("DOMContentLoaded", () => {
     fechaInput.value = new Date().toISOString().split("T")[0];
   }
 
-  // Autocompletado con fetch
+  // ===============================
+  // AUTOCOMPLETADO
+  // ===============================
   inputNombre.addEventListener("input", async () => {
     const texto = inputNombre.value.trim();
 
@@ -42,9 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      const respuesta = await fetch(
-        `/api/insumos/buscar?nombre=${encodeURIComponent(texto)}`
-      );
+      const respuesta = await fetch(`/api/insumos/buscar?nombre=${encodeURIComponent(texto)}`);
       const sugerencias = await respuesta.json();
 
       listaSugerencias.innerHTML = "";
@@ -84,44 +78,60 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // ➕ Agregar insumo a la tabla
+  // ===============================
+  // AGREGAR INSUMO
+  // ===============================
   document.getElementById("btnAgregarInsumo").addEventListener("click", () => {
     const id = inputInsumoId.value;
     const nombre = inputNombre.value.trim();
     const cantidad = parseInt(inputCantidad.value, 10);
 
     if (!id || !nombre || isNaN(cantidad) || cantidad <= 0) {
-      alert("Selecciona un insumo válido y una cantidad positiva.");
-      if (!id) inputNombre.classList.add("is-invalid");
-      if (isNaN(cantidad) || cantidad <= 0)
-        inputCantidad.classList.add("is-invalid");
+      Swal.fire({
+        icon: "warning",
+        title: "Datos inválidos",
+        text: "Selecciona un insumo válido y una cantidad positiva.",
+        confirmButtonColor: "#3085d6"
+      });
       return;
     }
 
-    // ❌ Verificar si el insumo ya fue agregado
-    const yaExiste = insumosAgregados.some((i) => i.insumoId === id);
-    if (yaExiste) {
-      alert("Este insumo ya fue agregado.");
+    // Verificar repetido
+    if (insumosAgregados.some((i) => i.insumoId === id)) {
+      Swal.fire({
+        icon: "info",
+        title: "Insumo duplicado",
+        text: "Este insumo ya fue agregado.",
+      });
       return;
     }
-
-    inputNombre.classList.remove("is-invalid");
-    inputCantidad.classList.remove("is-invalid");
 
     insumosAgregados.push({ insumoId: id, nombre, cantidad });
 
     const fila = document.createElement("tr");
     fila.innerHTML = `
-    <td>${nombre}</td>
-    <td>${cantidad}</td>
-    <td><button class="btn btn-sm btn-danger btnEliminar">Eliminar</button></td>
-  `;
+      <td>${nombre}</td>
+      <td>${cantidad}</td>
+      <td><button class="btn btn-sm btn-danger btnEliminar">Eliminar</button></td>
+    `;
     tablaInsumos.appendChild(fila);
 
-    fila.querySelector(".btnEliminar").addEventListener("click", () => {
-      tablaInsumos.removeChild(fila);
-      const index = insumosAgregados.findIndex((i) => i.insumoId === id);
-      if (index !== -1) insumosAgregados.splice(index, 1);
+    fila.querySelector(".btnEliminar").addEventListener("click", async () => {
+      const confirm = await Swal.fire({
+        title: "¿Eliminar insumo?",
+        text: "Este insumo se quitará de la lista.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Eliminar"
+      });
+
+      if (confirm.isConfirmed) {
+        tablaInsumos.removeChild(fila);
+        const index = insumosAgregados.findIndex((i) => i.insumoId === id);
+        if (index !== -1) insumosAgregados.splice(index, 1);
+      }
     });
 
     inputNombre.value = "";
@@ -131,7 +141,9 @@ document.addEventListener("DOMContentLoaded", () => {
     inputCantidad.disabled = true;
   });
 
-  // 📤 Enviar entrada al backend
+  // ===============================
+  // GUARDAR ENTRADA
+  // ===============================
   formulario.addEventListener("submit", async (e) => {
     e.preventDefault();
     formulario.classList.add("was-validated");
@@ -139,7 +151,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!formulario.checkValidity()) return;
 
     if (insumosAgregados.length === 0) {
-      alert("Debes agregar al menos un insumo.");
+      Swal.fire({
+        icon: "warning",
+        title: "Lista vacía",
+        text: "Debes agregar al menos un insumo.",
+      });
       return;
     }
 
@@ -162,18 +178,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (!res.ok) throw new Error(await res.text());
 
-      mostrarAlerta();
-      formulario.reset();
-      tablaInsumos.innerHTML = "";
-      insumosAgregados.length = 0;
-      inputCantidad.disabled = true;
+      await Swal.fire({
+        icon: "success",
+        title: "Entrada registrada",
+        text: "La entrada se guardó exitosamente.",
+        timer: 2200,
+        showConfirmButton: false,
+      });
+
+      window.location.href = "/inventario";
+
     } catch (err) {
       console.error("Error al guardar entrada:", err);
-      alert("No se pudo guardar la entrada. Revisa la consola.");
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "No se pudo guardar la entrada.",
+      });
     }
   });
 
-  // 🧹 Botón Limpiar
+  // ===============================
+  // LIMPIAR FORMULARIO
+  // ===============================
   document.getElementById("btnLimpiar").addEventListener("click", () => {
     formulario.reset();
     formulario.classList.remove("was-validated");
@@ -183,28 +210,19 @@ document.addEventListener("DOMContentLoaded", () => {
     inputCantidad.disabled = true;
     tablaInsumos.innerHTML = "";
     insumosAgregados.length = 0;
+
+    Swal.fire({
+      icon: "info",
+      title: "Formulario limpiado",
+      timer: 1200,
+      showConfirmButton: false
+    });
   });
-
-  function mostrarAlerta() {
-    overlay.style.display = "block";
-    alertaExito.classList.remove("d-none");
-    alertaExito.style.display = "flex";
-    setTimeout(ocultarAlerta, 5000);
-  }
-
-  function ocultarAlerta() {
-    overlay.style.display = "none";
-    alertaExito.classList.add("d-none");
-    alertaExito.style.display = "none";
-    window.location.href = "/inventario";
-  }
-
-  btnCerrarAlerta?.addEventListener("click", ocultarAlerta);
-  btnAceptarAlerta?.addEventListener("click", ocultarAlerta);
 });
 
-
-// Cargar proveedores al cargar la página
+// ===============================
+// CARGAR PROVEEDORES
+// ===============================
 document.addEventListener("DOMContentLoaded", function () {
   fetch("/api/proveedores")
     .then((response) => response.json())
@@ -212,10 +230,16 @@ document.addEventListener("DOMContentLoaded", function () {
       const selectProveedor = document.getElementById("proveedor");
       data.forEach((prov) => {
         const option = document.createElement("option");
-        option.value = prov.id; // o prov._id si usas Mongo
+        option.value = prov.id;
         option.textContent = prov.nombre;
         selectProveedor.appendChild(option);
       });
     })
-    .catch((error) => console.error("Error cargando proveedores:", error));
+    .catch(() =>
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "No se pudo cargar la lista de proveedores.",
+      })
+    );
 });

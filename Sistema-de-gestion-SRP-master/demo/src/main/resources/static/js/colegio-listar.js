@@ -1,64 +1,113 @@
-const apiColegios = "/api/colegios"; // No uses localhost si la app sirve el API
-const tablaBody = document.querySelector("#tablaColegios tbody");
+const apiColegios = "/api/colegios"; // API servida por la aplicación
 
-// ⏳ Cargar colegios al iniciar vista
-document.addEventListener("DOMContentLoaded", async () => {
-    await cargarColegios();
-    activarDataTable();
+// ======================================================
+// 📊 DataTable con ServerSide (como entradas y proveedores)
+// ======================================================
+$(document).ready(function () {
+    $("#tablaColegios").DataTable({
+        serverSide: true,
+        processing: true,
+        responsive: true,
+        autoWidth: false,
+        paging: true,
+        ordering: true,
+        searching: true,
+        pageLength: 5,
+        lengthMenu: [5, 20, 50, 100],
+
+        language: {
+            search: "Buscar:",
+            lengthMenu: "Mostrar _MENU_ registros",
+            info: "Mostrando _START_ a _END_ de _TOTAL_ colegios",
+            paginate: {
+                first: "Primero",
+                last: "Último",
+                next: "Siguiente",
+                previous: "Anterior",
+            },
+            zeroRecords: "No hay colegios registrados",
+        },
+
+        // ======================================================
+        // 📌 AJAX servidor → DataTables
+        // ======================================================
+        ajax: async function (data, callback) {
+            try {
+                const page = Math.floor(data.start / data.length);
+                const size = data.length;
+
+                const response = await fetch(`${apiColegios}?page=${page}&size=${size}`);
+
+                if (!response.ok) {
+                    throw new Error(`Error al obtener colegios`);
+                }
+
+                const json = await response.json();
+
+                // Se aceptan estas estructuras:
+                const colegios = json.data || json.content || json || [];
+
+                const formattedData = colegios.map((c) => ({
+                    nombre: c.nombre,
+                    direccion: c.direccion || "-",
+                    acciones: `
+                        <button class="btn btn-info btn-sm" title="Editar"
+                                onclick="editarColegio('${c.id}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+
+                        <button class="btn btn-danger btn-sm ms-1"
+                                title="Eliminar"
+                                onclick="eliminarColegio('${c.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    `
+                }));
+
+                callback({
+                    draw: data.draw,
+                    recordsTotal: json.recordsTotal || json.totalElements || colegios.length,
+                    recordsFiltered: json.recordsFiltered || json.totalElements || colegios.length,
+                    data: formattedData,
+                });
+
+            } catch (error) {
+                console.error("Error al obtener colegios:", error);
+            }
+        },
+
+        // ======================================================
+        // 📌 Mapeo de columnas
+        // ======================================================
+        columns: [
+            { data: "nombre", title: "Nombre" },
+            { data: "direccion", title: "Dirección" },
+            {
+                data: "acciones",
+                title: "Acciones",
+                orderable: false,
+                searchable: false,
+            },
+        ],
+    });
 });
 
+
 // ======================================================
-// 🔹 Cargar lista de colegios
+// ✏️ Editar colegio
 // ======================================================
-async function cargarColegios() {
-    try {
-        const res = await fetch(apiColegios);
-        const data = await res.json();
-
-        if (!Array.isArray(data) || data.length === 0) {
-            tablaBody.innerHTML = `
-                <tr>
-                    <td colspan="4" class="text-center">No hay colegios registrados.</td>
-                </tr>`;
-            return;
-        }
-
-        tablaBody.innerHTML = data
-            .map(
-                (c) => `
-            <tr>
-                <td>${c.nombre}</td>
-                <td>${c.direccion || "-"}</td>
-                
-                <td class="text-center">
-                    <button class="btn btn-info btn-sm" title="Editar" onclick="editarColegio('${c.id}')">
-                        <i class="fas fa-edit"></i>
-                    </button>
-
-                    <button class="btn btn-danger btn-sm ms-1" title="Eliminar" onclick="eliminarColegio('${c.id}')">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </td>
-            </tr>
-        `
-            )
-            .join("");
-    } catch (err) {
-        console.error("Error al cargar colegios:", err);
-        tablaBody.innerHTML = `
-            <tr>
-                <td colspan="4" class="text-center text-danger">Error cargando datos.</td>
-            </tr>`;
-    }
+function editarColegio(id) {
+    window.location.href = `/colegio/editar/${id}`;
 }
 
+
 // ======================================================
-// 🗑️ Eliminar colegio con confirmación estilo SB Admin
+// 🗑️ Eliminar con SweetAlert
 // ======================================================
 async function eliminarColegio(id) {
     const confirmacion = await Swal.fire({
         title: "¿Eliminar colegio?",
-        text: "Esta acción también eliminará el o los uniformes asociados.",
+        text: "Esta acción también eliminará los uniformes asociados.",
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Sí, eliminar",
@@ -81,11 +130,10 @@ async function eliminarColegio(id) {
                 showConfirmButton: false
             });
 
-            cargarColegios();
+            $("#tablaColegios").DataTable().ajax.reload(null, false);
 
         } else {
             const err = await res.text();
-
             Swal.fire({
                 title: "Error",
                 text: "Error al eliminar: " + err,
@@ -100,28 +148,4 @@ async function eliminarColegio(id) {
             icon: "error"
         });
     }
-}
-
-
-// ======================================================
-// ✏️ Editar colegio
-// ======================================================
-function editarColegio(id) {
-    window.location.href = `/colegio/editar/${id}`;
-}
-
-// ======================================================
-// 📊 Activar DataTable igual que en la vista "Salidas"
-// ======================================================
-function activarDataTable() {
-    if ($.fn.DataTable.isDataTable("#tablaColegios")) {
-        $("#tablaColegios").DataTable().destroy();
-    }
-
-    $("#tablaColegios").DataTable({
-        responsive: true,
-        language: {
-            url: "//cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json",
-        },
-    });
 }

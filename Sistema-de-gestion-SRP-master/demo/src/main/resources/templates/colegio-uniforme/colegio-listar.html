@@ -5,82 +5,86 @@
 <head>
     <meta charset="UTF-8">
     <title>Lista de Colegios</title>
+
     <link rel="icon" type="image/png" href="/img/icons8-coser-16.png" />
-    <!-- ESTILOS DEL TEMPLATE (MISMOS QUE SALIDAS) -->
+
+    <!-- CSS TEMPLATE -->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css" />
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,400,600,700,800,900" rel="stylesheet" />
     <link href="css/sb-admin-2.min.css" rel="stylesheet" />
-    <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet" />
+    <link href="/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet" />
 
-    <!-- Opcional: tus estilos específicos -->
-    <link rel="stylesheet" href="css/dashboard.css" />
+    <!-- CUSTOM -->
+    <link href="/css/dashboard.css" rel="stylesheet" />
 </head>
 
+<div id="wrapper" layout:fragment="content">
 
+    <div class="container-fluid">
 
-    <div id="wrapper" layout:fragment="content">
-
-        <div class="container-fluid">
-
-            <!-- Encabezado estilo SB Admin -->
-            <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                <h1 class="h3 mb-0 text-gray-800">Lista de Colegios</h1>
-                <a href="/colegio/registrar-colegio" class="btn btn-primary btn-sm">
-                    <i class="fas fa-plus"></i> Registrar Colegio
-                </a>
-            </div>
-
-            <p class="mb-4">Aquí puedes visualizar y gestionar todos los colegios registrados.</p>
-
-            <!-- CARD -->
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Colegios Registrados</h6>
-                </div>
-
-                <div class="card-body">
-                    <div class="table-responsive">
-
-                        <table class="table table-bordered" id="tablaColegios" width="100%" cellspacing="0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Nombre del Colegio</th>
-                                    <th>Dirección</th>
-
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                <tr>
-                                    <td colspan="4" class="text-center">Cargando datos...</td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                    </div>
-                </div>
-            </div>
-
+        <!-- Header -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Lista de Colegios</h1>
+            <a href="/colegio/registrar-colegio" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus"></i> Registrar Colegio
+            </a>
         </div>
+
+        <p class="mb-4">Aquí puedes visualizar y gestionar todos los colegios registrados.</p>
+
+        <!-- Tabla -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Colegios Registrados</h6>
+            </div>
+
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="tablaColegios" width="100%" cellspacing="0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Nombre del Colegio</th>
+                                <th>Dirección</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td colspan="3" class="text-center">Cargando datos...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
     </div>
+</div>
 
-    <!-- Scripts -->
-    <div layout:fragment="scripts">
+<!-- SCRIPTS -->
+<div layout:fragment="scripts">
 
-        <script src="vendor/jquery/jquery.min.js"></script>
-        <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-        <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
-        <script src="js/sb-admin-2.min.js"></script>
+    <!-- jQuery debe ir primero SIEMPRE -->
+    <script src="vendor/jquery/jquery.min.js"></script>
 
-        <!-- DataTables -->
-        <script src="vendor/datatables/jquery.dataTables.min.js"></script>
-        <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- Efectos -->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+    <!-- SB Admin -->
+    <script src="js/sb-admin-2.min.js"></script>
 
-        <!-- Tu JS -->
-        <script src="/js/colegio-listar.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- DATATABLES -->
+    <script src="/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="/vendor/datatables/dataTables.bootstrap4.min.js"></script>
 
-    </div>
+    <!-- SWEETALERT -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- TU JS -->
+    <script src="/js/colegio-listar.js"></script>
+
+</div>
 
 </html>

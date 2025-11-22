@@ -65,6 +65,8 @@ async function obtenerInsumos() {
       searching: true,
       paging: true,
       ordering: true,
+      pageLength: 5,
+      lengthMenu: [5, 20, 50, 100],
       language: {
         search: "Buscar:",
         lengthMenu: "Mostrar _MENU_ registros",

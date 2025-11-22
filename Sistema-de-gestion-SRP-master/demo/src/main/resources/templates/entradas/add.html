@@ -27,8 +27,11 @@
   <link rel="stylesheet" href="css/dashboard.css" />
   <link rel="stylesheet" href="css/entrada-add.css" />
 
-  <!--CSS PARA ALERTA DE INSUMO AGREGADO-->
-  <link rel="stylesheet" href="css/alerta-agre-insumo.css" />
+  <!-- ❌ YA NO SE USA EL CSS DE ALERTA PERSONALIZADA -->
+  <!-- <link rel="stylesheet" href="css/alerta-agre-insumo.css" /> -->
+
+  <!-- SWEETALERT2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <!-- CSRF -->
   <meta name="_csrf" th:content="${_csrf.token}" />
@@ -41,6 +44,7 @@
     <div layout:fragment="content">
       <!-- AQUI VA EL CONTENIDO DE LA PAGINA -->
       <div class="container-fluid">
+
         <!-- Page Heading -->
         <div class="d-sm-flex align-items-center justify-content-between mb-2">
           <h1 class="h3 mb-0 text-gray-800">Agregar Nueva Entrada</h1>
@@ -52,49 +56,25 @@
             <span class="text">Volver</span>
           </a>
         </div>
+
         <p class="mb-3">
           Completa los campos con la información y detalles del insumo para
           registrarlo en el inventario.
         </p>
 
-        <!-- Fondo oscuro -->
-        <div id="overlay"></div>
-        <!-- 🔔 ALERTA DE ÉXITO -->
-        <div id="alertaExito" class="card d-none">
-          <button class="dismiss" type="button">×</button>
-          <div class="header">
-            <div class="image">
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <g id="SVGRepo_iconCarrier">
-                  <path d="M20 7L9.00004 18L3.99994 13" stroke="#000000" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round"></path>
-                </g>
-              </svg>
-            </div>
-            <div class="content">
-              <span class="title">¡Entrada registrada!</span>
-              <p class="message">
-                La entrada ha sido agregada correctamente.
-              </p>
-            </div>
-            <div class="actions">
-              <button class="track" type="button">Ok</button>
-            </div>
-          </div>
-        </div>
-
         <!-- FORMULARIO -->
         <div class="p-3">
           <form id="formEntrada" class="needs-validation" novalidate>
-            <!-- SECCIÓN 1: AGREGAR INSUMOS (Nombre y Cantidad) -->
+
+            <!-- SECCIÓN 1: AGREGAR INSUMOS -->
             <div class="card1 shadow mb-4">
               <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">
-                  Selección de Insumos
-                </h6>
+                <h6 class="m-0 font-weight-bold text-primary">Selección de Insumos</h6>
               </div>
+
               <div class="card-body">
                 <div class="row g-3">
+
                   <!-- Nombre del insumo -->
                   <div class="col-md-5 position-relative">
                     <label for="nombre" class="form-label">Nombre del insumo</label>
@@ -106,7 +86,7 @@
 
                   <!-- Unidad de medida -->
                   <div class="col-3 mb-5">
-                    <label for="unidadMedida" class="form-label">Unidad M:</label>
+                    <label for="unidadM" class="form-label">Unidad M:</label>
                     <input type="text" class="form-control" id="unidadM" name="unidadM" readonly />
                   </div>
 
@@ -114,37 +94,29 @@
                   <div class="col-md-4">
                     <label for="cantidad" class="form-label required">Cantidad</label>
                     <input type="number" class="form-control" id="cantidad" name="cantidad" min="0" step="5" required />
-                    <div class="invalid-feedback">
-                      Por favor ingrese una cantidad válida.
-                    </div>
+                    <div class="invalid-feedback">Por favor ingrese una cantidad válida.</div>
                   </div>
 
-                  <!-- Botón de agregar -->
+                  <!-- Botón agregar -->
                   <div class="col-md-2 d-flex align-items-end">
                     <button type="button" id="btnAgregarInsumo" class="btn btn-primary btn-block">
                       <i class="fas fa-plus mr-1"></i> Agregar
                     </button>
                   </div>
-                  <!-- Enlace para agregar nuevo insumo -->
-                  <div class="col-md-10 d-flex align-items-end" id="nuevoInsumoContainer" style="display: none">
-                    <a th:href="@{/agregar}" class="btn-block">
-                      <i class=""></i>¿No encuentras el insumo? ¡Crea uno
-                      nuevo!
-                    </a>
-                  </div>
+
                 </div>
               </div>
             </div>
-            <!-- SECCIÓN 3: LISTA DE INSUMOS AGREGADOS -->
+
+            <!-- SECCIÓN 3: LISTA DE INSUMOS -->
             <div class="card3 shadow mb-4">
               <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">
-                  Lista de Insumos
-                </h6>
+                <h6 class="m-0 font-weight-bold text-primary">Lista de Insumos</h6>
               </div>
+
               <div class="card-body">
                 <div class="table-responsive">
-                  <table class="table table-bordered" id="tablaInsumos" width="100%" cellspacing="0">
+                  <table class="table table-bordered" width="100%">
                     <thead>
                       <tr>
                         <th>Nombre</th>
@@ -152,62 +124,58 @@
                         <th>Acciones</th>
                       </tr>
                     </thead>
-                    <tbody id="tabla-insumos">
-                      <!-- Aquí se cargarán dinámicamente los insumos seleccionados -->
-                    </tbody>
+                    <tbody id="tabla-insumos"></tbody>
                   </table>
                 </div>
               </div>
             </div>
 
-            <!-- SECCIÓN 2: INFORMACIÓN GENERAL DE LA ENTRADA -->
+            <!-- SECCIÓN 2: INFORMACIÓN GENERAL -->
             <div class="card2 shadow mb-4">
               <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">
-                  Información General de la Entrada
-                </h6>
+                <h6 class="m-0 font-weight-bold text-primary">Información General de la Entrada</h6>
               </div>
+
               <div class="card-body">
                 <div class="row g-3">
-                  <!-- Fecha de adquisición -->
-                    <!-- Fecha -->
-                    <div class="col-md-4">
-                      <label for="fecha" class="form-label required">Fecha de adquisición</label>
-                      <input type="date" class="form-control" id="fecha" name="fecha" required />
-                      <div class="invalid-feedback">
-                        Por favor seleccione una fecha.
-                      </div>
-                    </div>
 
-                    <!-- Proveedor -->
-                    <div class="col-md-7">
-                      <label for="proveedor" class="form-label required">Proveedor</label>
-                      <select class="form-control" id="proveedor" name="proveedor" required>
-                        <option value="">-- Selecciona un proveedor --</option>
-                      </select>
-                      <div class="invalid-feedback">  
-                        Por favor selecciona un proveedor.
-                      </div>
-                    </div>
+                  <!-- Fecha -->
+                  <div class="col-md-4">
+                    <label for="fecha" class="form-label required">Fecha de adquisición</label>
+                    <input type="date" class="form-control" id="fecha" name="fecha" required />
+                    <div class="invalid-feedback">Por favor seleccione una fecha.</div>
                   </div>
+
+                  <!-- Proveedor -->
+                  <div class="col-md-7">
+                    <label for="proveedor" class="form-label required">Proveedor</label>
+                    <select class="form-control" id="proveedor" name="proveedor" required>
+                      <option value="">-- Selecciona un proveedor --</option>
+                    </select>
+                    <div class="invalid-feedback">Por favor selecciona un proveedor.</div>
+                  </div>
+
                   <!-- Descripción -->
                   <div class="col-12 mt-3">
                     <label for="descripcion" class="form-label">Descripción</label>
                     <textarea class="form-control" id="descripcion" name="descripcion" rows="3"></textarea>
                   </div>
+
                 </div>
               </div>
             </div>
 
-            <!-- BOTONES DE ACCIÓN -->
+            <!-- Botones -->
             <div class="d-flex justify-content-end mb-4">
               <button type="button" class="btn btn-outline-secondary mr-2" id="btnLimpiar">
                 <i class="fas fa-eraser mr-1"></i> Limpiar formulario
               </button>
+
               <button type="submit" class="btn btn-success">
                 <i class="fas fa-save mr-1"></i> Guardar entrada
               </button>
             </div>
+
           </form>
         </div>
       </div>
@@ -215,6 +183,7 @@
   </div>
 
   <div layout:fragment="scripts">
+
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -225,9 +194,11 @@
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>
 
-    <!--SCRIPT PARA CONSUMIR LA API-->
+    <!-- SCRIPT PARA CONSUMIR LA API -->
     <script src="/js/agregar-entrada.js"></script>
+
   </div>
+
 </body>
 
 </html>
